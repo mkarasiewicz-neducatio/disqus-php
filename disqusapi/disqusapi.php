@@ -60,8 +60,7 @@ class DisqusResource {
             array_push($tree, $node);
         }
         $this->tree = $tree;
-    }
-
+    } 
     public function __get($attr) {
         $interface = $this->interface->$attr;
         if (!$interface) {
@@ -69,8 +68,10 @@ class DisqusResource {
         }
         return new DisqusResource($this->api, $interface, $attr, $this->tree);
     }
-
+    
     public function __call($name, $args) {
+      
+        $withCursor = false;
         $resource = $this->interface->$name;
         if (!$resource) {
             throw new DisqusInterfaceNotDefined();
@@ -82,13 +83,16 @@ class DisqusResource {
                 throw new Exception('Missing required argument: '.$k);
             }
         }
-
         $api = $this->api;
 
         if (empty($kwargs['api_secret'])) {
             $kwargs['api_secret'] = $api->key;
         }
-
+        
+        if (isset($kwargs['with_cursor'])) {
+            $withCursor = $kwargs['with_cursor'];
+            unset($kwargs['with_cursor']);
+        }
         // emulate a named pop
         $version = (!empty($kwargs['version']) ? $kwargs['version'] : $api->version);
         $format = (!empty($kwargs['format']) ? $kwargs['format'] : $api->format);
@@ -114,8 +118,12 @@ class DisqusResource {
         if ($response['code'] != 200) {
             throw new DisqusAPIError($data->code, $data->response);
         }
-
-        return $data->response;
+        
+        if ($withCursor) {
+          return $data;
+        } else {
+          return $data->response;
+        }
     }
 }
 
