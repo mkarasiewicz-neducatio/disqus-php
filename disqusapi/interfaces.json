@@ -667,6 +667,27 @@
         "json",
         "jsonp"
       ]
+    },
+    "addModerator": {
+      "required": [
+        "user",
+        "forum"
+      ],
+      "method": "POST",
+      "formats": [
+        "json",
+        "jsonp"
+      ]
+    },
+    "removeModerator": {
+      "required": [
+        "moderator"
+      ],
+      "method": "POST",
+      "formats": [
+        "json",
+        "jsonp"
+      ]
     }
   },
   "categories": {
